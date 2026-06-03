@@ -3,12 +3,16 @@ package com.desafioTecnico.bff.controller;
 import com.desafioTecnico.bff.dto.RegisterPersonRequest;
 import com.desafioTecnico.bff.service.BackendProxyService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/persons")
 public class PersonController {
+
+    private static final Logger log = LoggerFactory.getLogger(PersonController.class);
 
     private final BackendProxyService proxy;
 
@@ -18,16 +22,29 @@ public class PersonController {
 
     @PostMapping
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterPersonRequest request) {
-        return proxy.post("/api/v1/persons", request);
+        log.info("[BFF] POST /api/persons - cadastro recebido para: {}", request.getFullName());
+        ResponseEntity<Object> response = proxy.post("/api/v1/persons", request);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("[BFF] Cadastro realizado com sucesso para: {}", request.getFullName());
+        } else {
+            log.warn("[BFF] Falha no cadastro para: {} - status: {}", request.getFullName(), response.getStatusCode());
+        }
+        return response;
     }
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
-        return proxy.get("/api/v1/persons");
+        log.info("[BFF] GET /api/persons - listando pessoas");
+        ResponseEntity<Object> response = proxy.get("/api/v1/persons");
+        log.info("[BFF] Lista retornada - status: {}", response.getStatusCode());
+        return response;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable String id) {
-        return proxy.get("/api/v1/persons/" + id);
+        log.info("[BFF] GET /api/persons/{} - buscando pessoa", id);
+        ResponseEntity<Object> response = proxy.get("/api/v1/persons/" + id);
+        log.info("[BFF] Busca por id {} - status: {}", id, response.getStatusCode());
+        return response;
     }
 }
