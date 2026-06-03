@@ -40,6 +40,14 @@ public class PersonController {
         return response;
     }
 
+    @GetMapping("/login/{login}")
+    public ResponseEntity<Object> getByLogin(@PathVariable String login) {
+        log.info("[BFF] GET /api/persons/login/{} - autenticando por login", login);
+        ResponseEntity<Object> response = proxy.get("/api/v1/persons/login/" + login);
+        log.info("[BFF] Login {} - status: {}", login, response.getStatusCode());
+        return response;
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable String id) {
         log.info("[BFF] GET /api/persons/{} - buscando pessoa", id);
