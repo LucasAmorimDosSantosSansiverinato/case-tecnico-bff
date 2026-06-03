@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: desafio-tecnico-bff
+
+server:
+  port: ${PORT:3001}
+  error:
+    include-message: always
+
+backend:
+  url: ${BACKEND_URL:http://localhost:8080}
+
+frontend:
+  origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
