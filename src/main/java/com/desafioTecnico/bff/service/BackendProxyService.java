@@ -35,7 +35,7 @@ public class BackendProxyService {
         try {
             ResponseEntity<Object> response = restTemplate.postForEntity(url, body, Object.class);
             log.info("[BFF->BACKEND] POST {} - resposta: {}", url, response.getStatusCode());
-            return response;
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (HttpClientErrorException ex) {
             log.warn("[BFF->BACKEND] POST {} - erro do cliente: {} - body: {}", url, ex.getStatusCode(), ex.getResponseBodyAsString());
             return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAs(Object.class));
@@ -57,7 +57,7 @@ public class BackendProxyService {
         try {
             ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
             log.info("[BFF->BACKEND] GET {} - resposta: {}", url, response.getStatusCode());
-            return response;
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (HttpClientErrorException ex) {
             log.warn("[BFF->BACKEND] GET {} - erro do cliente: {} - body: {}", url, ex.getStatusCode(), ex.getResponseBodyAsString());
             return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAs(Object.class));
