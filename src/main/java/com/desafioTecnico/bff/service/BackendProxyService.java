@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 @Service
 public class BackendProxyService {
@@ -38,10 +41,13 @@ public class BackendProxyService {
             return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAs(Object.class));
         } catch (HttpServerErrorException ex) {
             log.error("[BFF->BACKEND] POST {} - erro do servidor: {} - body: {}", url, ex.getStatusCode(), ex.getResponseBodyAsString());
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAs(Object.class));
+            return ResponseEntity.status(ex.getStatusCode()).body(Map.of("detail", ex.getResponseBodyAsString()));
         } catch (ResourceAccessException ex) {
             log.error("[BFF->BACKEND] POST {} - backend inacessível: {}", url, ex.getMessage());
-            return ResponseEntity.status(503).body("Backend unavailable: " + ex.getMessage());
+            return ResponseEntity.status(503).body(Map.of("detail", "Backend temporariamente indisponível. Tente novamente em alguns segundos."));
+        } catch (RestClientException ex) {
+            log.error("[BFF->BACKEND] POST {} - erro ao comunicar com backend: {}", url, ex.getMessage());
+            return ResponseEntity.status(503).body(Map.of("detail", "Backend temporariamente indisponível. Tente novamente em alguns segundos."));
         }
     }
 
@@ -57,10 +63,13 @@ public class BackendProxyService {
             return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAs(Object.class));
         } catch (HttpServerErrorException ex) {
             log.error("[BFF->BACKEND] GET {} - erro do servidor: {} - body: {}", url, ex.getStatusCode(), ex.getResponseBodyAsString());
-            return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAs(Object.class));
+            return ResponseEntity.status(ex.getStatusCode()).body(Map.of("detail", ex.getResponseBodyAsString()));
         } catch (ResourceAccessException ex) {
             log.error("[BFF->BACKEND] GET {} - backend inacessível: {}", url, ex.getMessage());
-            return ResponseEntity.status(503).body("Backend unavailable: " + ex.getMessage());
+            return ResponseEntity.status(503).body(Map.of("detail", "Backend temporariamente indisponível. Tente novamente em alguns segundos."));
+        } catch (RestClientException ex) {
+            log.error("[BFF->BACKEND] GET {} - erro ao comunicar com backend: {}", url, ex.getMessage());
+            return ResponseEntity.status(503).body(Map.of("detail", "Backend temporariamente indisponível. Tente novamente em alguns segundos."));
         }
     }
 }
