@@ -18,3 +18,12 @@ management:
     web:
       exposure:
         include: health,info
+
+# Segredo para assinar tokens de usuário (mínimo 32 chars)
+jwt:
+  secret: ${JWT_SECRET:changeme-jwt-secret-32-chars-minimum}
+
+# Segredo compartilhado com o Backend para o service token (mínimo 32 chars)
+service:
+  token:
+    secret: ${SERVICE_TOKEN_SECRET:changeme-service-secret-32-chars-min}

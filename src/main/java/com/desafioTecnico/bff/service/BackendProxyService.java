@@ -1,5 +1,6 @@
 package com.desafioTecnico.bff.service;
 
+import com.desafioTecnico.bff.security.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,23 +18,35 @@ import java.util.Map;
 public class BackendProxyService {
 
     private static final Logger log = LoggerFactory.getLogger(BackendProxyService.class);
+    private static final String SERVICE_TOKEN_HEADER = "X-Service-Token";
 
     private final RestTemplate restTemplate;
+    private final JwtService jwtService;
     private final String backendUrl;
 
     public BackendProxyService(
             RestTemplate restTemplate,
+            JwtService jwtService,
             @Value("${backend.url:http://localhost:8080}") String backendUrl
     ) {
         this.restTemplate = restTemplate;
-        this.backendUrl = backendUrl;
+        this.jwtService   = jwtService;
+        this.backendUrl   = backendUrl;
+    }
+
+    // Monta headers com o service token JWT para autenticar o BFF no Backend
+    private HttpHeaders headersComServiceToken() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(SERVICE_TOKEN_HEADER, jwtService.gerarServiceToken());
+        return headers;
     }
 
     public <T> ResponseEntity<Object> post(String path, T body) {
         String url = backendUrl + path;
         log.info("[BFF->BACKEND] POST {}", url);
         try {
-            ResponseEntity<Object> response = restTemplate.postForEntity(url, body, Object.class);
+            HttpEntity<T> entity = new HttpEntity<>(body, headersComServiceToken());
+            ResponseEntity<Object> response = restTemplate.postForEntity(url, entity, Object.class);
             log.info("[BFF->BACKEND] POST {} - resposta: {}", url, response.getStatusCode());
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (HttpClientErrorException ex) {
@@ -55,7 +68,8 @@ public class BackendProxyService {
         String url = backendUrl + path;
         log.info("[BFF->BACKEND] GET {}", url);
         try {
-            ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
+            HttpEntity<Void> entity = new HttpEntity<>(headersComServiceToken());
+            ResponseEntity<Object> response = restTemplate.exchange(url, org.springframework.http.HttpMethod.GET, entity, Object.class);
             log.info("[BFF->BACKEND] GET {} - resposta: {}", url, response.getStatusCode());
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (HttpClientErrorException ex) {
