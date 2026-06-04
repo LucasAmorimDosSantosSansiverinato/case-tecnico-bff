@@ -1,7 +1,11 @@
 package com.desafioTecnico.bff.service;
 
+import com.desafioTecnico.bff.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,10 +14,14 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
+@ExtendWith(MockitoExtension.class)
 class BackendProxyServiceTest {
+
+    @Mock JwtService jwtService;
 
     private RestTemplate restTemplate;
     private MockRestServiceServer server;
@@ -23,7 +31,9 @@ class BackendProxyServiceTest {
     void setUp() {
         restTemplate = new RestTemplate();
         server = MockRestServiceServer.createServer(restTemplate);
-        service = new BackendProxyService(restTemplate, "http://backend:8080");
+        // JwtService é mockado para retornar um token fictício
+        when(jwtService.gerarServiceToken()).thenReturn("mock-service-token");
+        service = new BackendProxyService(restTemplate, jwtService, "http://backend:8080");
     }
 
     @Test
