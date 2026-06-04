@@ -10,10 +10,10 @@ import java.time.LocalDate;
 public class RegisterPersonRequest {
 
     @NotBlank
-    private String fullName;
+    private String nomeCompleto;
 
     @NotBlank
-    private String document;
+    private String cpf;
 
     @NotBlank
     @Email
@@ -21,34 +21,34 @@ public class RegisterPersonRequest {
 
     @NotNull
     @Past
-    private LocalDate birthDate;
+    private LocalDate dataNascimento;
 
     @NotBlank
     private String cep;
 
-    private String complement;
-    private String number;
+    private String complemento;
+    private String numero;
 
     public RegisterPersonRequest() {}
 
-    public String getFullName()            { return fullName; }
-    public void setFullName(String v)      { this.fullName = v; }
+    public String getNomeCompleto()            { return nomeCompleto; }
+    public void setNomeCompleto(String v)      { this.nomeCompleto = v; }
 
-    public String getDocument()            { return document; }
-    public void setDocument(String v)      { this.document = v; }
+    public String getCpf()                     { return cpf; }
+    public void setCpf(String v)               { this.cpf = v; }
 
-    public String getEmail()               { return email; }
-    public void setEmail(String v)         { this.email = v; }
+    public String getEmail()                   { return email; }
+    public void setEmail(String v)             { this.email = v; }
 
-    public LocalDate getBirthDate()        { return birthDate; }
-    public void setBirthDate(LocalDate v)  { this.birthDate = v; }
+    public LocalDate getDataNascimento()       { return dataNascimento; }
+    public void setDataNascimento(LocalDate v) { this.dataNascimento = v; }
 
-    public String getCep()                 { return cep; }
-    public void setCep(String v)           { this.cep = v; }
+    public String getCep()                     { return cep; }
+    public void setCep(String v)               { this.cep = v; }
 
-    public String getComplement()          { return complement; }
-    public void setComplement(String v)    { this.complement = v; }
+    public String getComplemento()             { return complemento; }
+    public void setComplemento(String v)       { this.complemento = v; }
 
-    public String getNumber()              { return number; }
-    public void setNumber(String v)        { this.number = v; }
+    public String getNumero()                  { return numero; }
+    public void setNumero(String v)            { this.numero = v; }
 }

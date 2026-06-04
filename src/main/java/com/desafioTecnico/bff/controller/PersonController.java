@@ -22,12 +22,12 @@ public class PersonController {
 
     @PostMapping
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterPersonRequest request) {
-        log.info("[BFF] POST /api/persons - cadastro recebido para: {}", request.getFullName());
+        log.info("[BFF] POST /api/persons - cadastro recebido para: {}", request.getNomeCompleto());
         ResponseEntity<Object> response = proxy.post("/api/v1/persons", request);
         if (response.getStatusCode().is2xxSuccessful()) {
-            log.info("[BFF] Cadastro realizado com sucesso para: {}", request.getFullName());
+            log.info("[BFF] Cadastro realizado com sucesso para: {}", request.getNomeCompleto());
         } else {
-            log.warn("[BFF] Falha no cadastro para: {} - status: {}", request.getFullName(), response.getStatusCode());
+            log.warn("[BFF] Falha no cadastro para: {} - status: {}", request.getNomeCompleto(), response.getStatusCode());
         }
         return response;
     }
