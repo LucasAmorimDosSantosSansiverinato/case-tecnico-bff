@@ -1,71 +1,52 @@
 # BFF — desafioTecnico
 
-## Posição na Arquitetura
+## Arquitetura
 
 ```
 Frontend → [BFF] → Backend → PostgreSQL
 ```
 
-O BFF é o intermediário entre Frontend e Backend. Autentica o usuário, emite JWT, valida tokens nas rotas protegidas e assina todas as chamadas ao Backend com um service token.
+Intermediário entre Frontend e Backend. O Backend não é acessível diretamente.
+
+---
 
 ## Stack
 
 - Java 21 / Spring Boot 3.2 / Maven
 - jjwt 0.12.6
 
-## Responsabilidades
+---
 
-- Autenticar usuário (`POST /api/auth/login`) e emitir JWT de usuário
-- Validar JWT do usuário nas rotas protegidas (JwtFilter)
-- Assinar toda requisição ao Backend com um service token JWT de curta duração
-- Buscar endereço pelo CEP diretamente via ViaCEP (`GET /api/address/{cep}`)
-- Configurar CORS para o domínio do Frontend
+## Por que BFF?
+
+- O Backend fica isolado — só o BFF sabe o endereço e o `SERVICE_TOKEN_SECRET`
+- CORS fica aqui, o Backend não precisa se preocupar com isso
+- No futuro é fácil adicionar um backoffice: novo BFF com permissões diferentes, mesmo Backend
+
+**Clerk (não usado):** simplificaria muito o auth, mas não estava nas techs da vaga.
+
+---
+
+## JWT duplo
+
+**Token de usuário** (8h): emitido no login, enviado pelo Frontend em rotas protegidas (`Authorization: Bearer`).
+
+**Service token** (30s): gerado pelo BFF a cada chamada ao Backend (`X-Service-Token`). Validade curta intencional — mesmo interceptado, expira rápido.
+
+---
 
 ## Endpoints
 
 | Método | Rota | Auth | Descrição |
 |---|---|---|---|
-| `POST` | `/api/auth/login` | Pública | Autentica por login, retorna JWT + dados da pessoa |
-| `POST` | `/api/persons` | Pública | Cadastra nova pessoa |
-| `GET` | `/api/persons` | JWT usuário | Lista todas as pessoas |
-| `GET` | `/api/persons/{id}` | JWT usuário | Busca pessoa por ID |
-| `GET` | `/api/address/{cep}` | Pública | Busca endereço no ViaCEP |
+| `POST` | `/api/auth/login` | Pública | Autentica, retorna JWT + dados |
+| `POST` | `/api/persons` | Pública | Cadastra pessoa |
+| `GET` | `/api/persons` | JWT usuário | Lista todas |
+| `GET` | `/api/persons/{id}` | JWT usuário | Busca por ID |
+| `GET` | `/api/address/{cep}` | Pública | Consulta ViaCEP |
 
-## Segurança (JWT)
-
-**Dois tokens distintos:**
-
-- **Token de usuário** — emitido no login, validade 8h, enviado pelo Frontend como `Authorization: Bearer`
-- **Service token** — gerado a cada chamada ao Backend, validade 30s, enviado como `X-Service-Token`
-
-Ambos são JWT assinados com HMAC-SHA256 usando segredos separados.
+---
 
 ## Hospedagem
 
-Produção: **Railway** — deploy automático via GitHub Actions no push para `main`.
-
-## Como Rodar Localmente
-
-> Comece pelo projeto **Case-Tecnico** (migration) que sobe banco e backend.
-
-```bash
-# 1. Sobe banco, migrations e backend
-cd Case-Tecnico && docker compose up postgres migrations backend
-
-# 2. Sobe o BFF
-cd case-tecnico-bff && mvn spring-boot:run
-```
-
-Disponível em `http://localhost:3001`
-
-## Variáveis de Ambiente
-
-| Variável | Descrição | Padrão local |
-|---|---|---|
-| `PORT` | Porta do servidor | `3001` |
-| `BACKEND_URL` | URL do Backend | `http://localhost:8080` |
-| `FRONTEND_ORIGIN` | Origem do Frontend (CORS) | `http://localhost:5173` |
-| `JWT_SECRET` | Segredo para tokens de usuário (mín. 32 chars) | padrão inseguro |
-| `SERVICE_TOKEN_SECRET` | Segredo compartilhado com o Backend (mín. 32 chars) | padrão inseguro |
-
-Copie `.env.example` para `.env` e preencha os segredos antes de rodar em produção.
+Render — deploy automático no push para `main`.
