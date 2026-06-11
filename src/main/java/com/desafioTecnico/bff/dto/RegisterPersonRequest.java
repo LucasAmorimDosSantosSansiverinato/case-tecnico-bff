@@ -31,24 +31,24 @@ public class RegisterPersonRequest {
 
     public RegisterPersonRequest() {}
 
-    public String getNomeCompleto()            { return nomeCompleto; }
-    public void setNomeCompleto(String v)      { this.nomeCompleto = v; }
+    public String getNomeCompleto()                        { return nomeCompleto; }
+    public void setNomeCompleto(String nomeCompleto)       { this.nomeCompleto = nomeCompleto; }
 
-    public String getCpf()                     { return cpf; }
-    public void setCpf(String v)               { this.cpf = v; }
+    public String getCpf()                                 { return cpf; }
+    public void setCpf(String cpf)                         { this.cpf = cpf; }
 
-    public String getEmail()                   { return email; }
-    public void setEmail(String v)             { this.email = v; }
+    public String getEmail()                               { return email; }
+    public void setEmail(String email)                     { this.email = email; }
 
-    public LocalDate getDataNascimento()       { return dataNascimento; }
-    public void setDataNascimento(LocalDate v) { this.dataNascimento = v; }
+    public LocalDate getDataNascimento()                   { return dataNascimento; }
+    public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 
-    public String getCep()                     { return cep; }
-    public void setCep(String v)               { this.cep = v; }
+    public String getCep()                                 { return cep; }
+    public void setCep(String cep)                         { this.cep = cep; }
 
-    public String getComplemento()             { return complemento; }
-    public void setComplemento(String v)       { this.complemento = v; }
+    public String getComplemento()                         { return complemento; }
+    public void setComplemento(String complemento)         { this.complemento = complemento; }
 
-    public String getNumero()                  { return numero; }
-    public void setNumero(String v)            { this.numero = v; }
+    public String getNumero()                              { return numero; }
+    public void setNumero(String numero)                   { this.numero = numero; }
 }
